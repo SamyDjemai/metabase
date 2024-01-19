@@ -51,7 +51,7 @@ export function DashboardTabs({
         ) : (
           tabs.map(tab => (
             <Sortable key={tab.id} id={tab.id} disabled={!isEditing}>
-              <TabButton.Renameable<SelectedTabId>
+              <TabButton.Renameable
                 value={tab.id}
                 label={tab.name}
                 onRename={name => renameTab(tab.id, name)}

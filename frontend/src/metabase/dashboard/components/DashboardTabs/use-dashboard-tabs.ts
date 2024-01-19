@@ -21,6 +21,10 @@ import { parseSlug, useSyncURLSlug } from "./use-sync-url-slug";
 
 let tabDeletionId = 1;
 
+function isTabIdType(id: unknown): id is SelectedTabId {
+  return typeof id === "number" || id === null;
+}
+
 export function useDashboardTabs({ location }: { location: Location }) {
   const dispatch = useDispatch();
   const tabs = useSelector(getTabs);
@@ -29,7 +33,11 @@ export function useDashboardTabs({ location }: { location: Location }) {
   useSyncURLSlug({ location });
   useMount(() => dispatch(initTabs({ slug: parseSlug({ location }) })));
 
-  const deleteTab = (tabId: SelectedTabId) => {
+  const deleteTab = (tabId: UniqueIdentifier) => {
+    if (!isTabIdType(tabId)) {
+      throw Error("deleteTab was called but tab id is invalid");
+    }
+
     const tabName = tabs.find(({ id }) => id === tabId)?.name;
     if (!tabName) {
       throw Error(`deleteTab was called but no tab with id ${tabId} was found`);

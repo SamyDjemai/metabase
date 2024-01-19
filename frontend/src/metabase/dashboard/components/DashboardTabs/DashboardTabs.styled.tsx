@@ -11,7 +11,7 @@ export const Container = styled.div`
 `;
 
 export const PlaceholderTab = ({ label }: { label: string }) => (
-  <BaseTabButton label={label} value={null} disabled />
+  <BaseTabButton label={label} value={""} disabled />
 );
 
 export const CreateTabButton = styled(BaseButton)`
