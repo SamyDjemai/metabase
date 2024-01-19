@@ -22,7 +22,6 @@ export function FilterHeaderButton({
       labelBreakpoint="sm"
       color={color("filter")}
       onClick={() => onOpenModal(MODAL_TYPES.FILTERS)}
-      data-metabase-event="View Mode; Open Filter Modal"
       data-testid="question-filter-header"
     >
       {t`Filter`}

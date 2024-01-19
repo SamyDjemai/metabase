@@ -21,7 +21,6 @@ export function AppBarLogo({
       to="/"
       isSmallAppBar={Boolean(isSmallAppBar)}
       onClick={onLogoClick}
-      data-metabase-event="Navbar;Logo"
       data-testid="main-logo-link"
     >
       <LogoIcon height={32} />

@@ -325,7 +325,6 @@ function AhHocQuestionLeftSide(props) {
             question={question}
             isObjectDetail={isObjectDetail}
             subHead
-            data-metabase-event="Question Data Source Click"
           />
         )}
       </ViewHeaderLeftSubHeading>
@@ -462,7 +461,6 @@ function ViewTitleHeaderRightSide(props) {
           isShowingSummarySidebar={isShowingSummarySidebar}
           onEditSummary={onEditSummary}
           onCloseSummary={onCloseSummary}
-          data-metabase-event="View Mode; Open Summary Widget"
         />
       )}
       {QuestionNotebookButton.shouldRender(props) && (
@@ -472,11 +470,6 @@ function ViewTitleHeaderRightSide(props) {
             question={question}
             isShowingNotebook={isShowingNotebook}
             setQueryBuilderMode={setQueryBuilderMode}
-            data-metabase-event={
-              isShowingNotebook
-                ? `Notebook Mode;Go to View Mode`
-                : `View Mode; Go to Notebook Mode`
-            }
           />
         </ViewHeaderIconButtonContainer>
       )}
@@ -522,11 +515,6 @@ function ViewTitleHeaderRightSide(props) {
             isEnabled: !canEditQuery,
             placement: "left",
           }}
-          data-metabase-event={
-            isShowingNotebook
-              ? `Notebook Mode; Click Save`
-              : `View Mode; Click Save`
-          }
           onClick={() => onOpenModal("save")}
         >
           {t`Save`}
