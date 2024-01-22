@@ -8,6 +8,7 @@
    [metabase.driver.sql-jdbc.connection :as sql-jdbc.conn]
    [metabase.models
     :refer [Dashboard DashboardCard Database Field FieldValues Table]]
+   [metabase.models.data-permissions.graph :as data-perms.graph]
    [metabase.models.database :as database]
    [metabase.models.field :as field]
    [metabase.models.permissions :as perms]
@@ -25,14 +26,15 @@
 (use-fixtures :once (fixtures/initialize :db :test-users))
 
 ;; TODO: change this namespace to use the version in metabase.test
-(defn- do-with-all-user-data-perms
+(defn- do-with-all-user-data-perms!
   "Implementation for [[with-all-users-data-perms]]"
   [graph f]
   (let [all-users-group-id  (u/the-id (perms-group/all-users))]
     (mt/with-additional-premium-features #{:advanced-permissions}
-      (memoize/memo-clear! @#'field/cached-perms-object-set)
+      (memoize/memo-clear! @#'field/cached-db-id)
       (perms.test-util/with-restored-perms!
         (u/ignore-exceptions (@#'perms/update-group-permissions! all-users-group-id graph))
+        (data-perms.graph/update-data-perms-graph! {all-users-group-id graph})
         (f)))))
 
 (defmacro ^:private with-all-users-data-perms!
@@ -40,7 +42,7 @@
   permissions feature flag, and clears the (5 second TTL) cache used for Field permissions, for convenience."
   {:style/indent 1}
   [graph & body]
-  `(do-with-all-user-data-perms ~graph (fn [] ~@body)))
+  `(do-with-all-user-data-perms! ~graph (fn [] ~@body)))
 
 (deftest current-user-test
   (testing "GET /api/user/current returns additional fields if advanced-permissions is enabled"
@@ -368,7 +370,8 @@
                    (:target (update-target))))))))))
 
 (deftest update-field-test
-  (t2.with-temp/with-temp [Field {field-id :id, table-id :table_id} {:name "Field "}]
+  (t2.with-temp/with-temp [Field {field-id :id, table-id :table_id} {:name "Field "}
+                           Table {other-table-id :id} {}]
     (let [{table-id :id, schema :schema, db-id :db_id} (t2/select-one Table :id table-id)]
       (testing "PUT /api/field/:id"
         (let [endpoint (format "field/%d" field-id)]
@@ -389,7 +392,7 @@
 
           (testing "a non-admin cannot update field metadata if they only have data model permissions for other tables"
             (with-all-users-data-perms! {db-id {:data-model {:schemas {schema {table-id       :none
-                                                                               (inc table-id) :all}}}}}
+                                                                               other-table-id :all}}}}}
               (mt/user-http-request :rasta :put 403 endpoint {:name "Field Test 2"})))
 
           (testing "a non-admin can update field metadata if they have data model perms for the DB"
@@ -453,7 +456,8 @@
                (mt/user-http-request :rasta :get 403 (format "field/%d?include_editable_data_model=true" (mt/id :users :name)))))))))
 
 (deftest update-table-test
-  (t2.with-temp/with-temp [Table {table-id :id} {:db_id (mt/id) :schema "PUBLIC"}]
+  (t2.with-temp/with-temp [Table {table-id :id} {:db_id (mt/id) :schema "PUBLIC"}
+                           Table {other-table-id :id} {}]
     (testing "PUT /api/table/:id"
       (let [endpoint (format "table/%d" table-id)]
         (testing "a non-admin cannot update table metadata if the advanced-permissions feature flag is not present"
@@ -472,7 +476,7 @@
 
         (testing "a non-admin cannot update table metadata if they only have data model permissions for other tables"
           (with-all-users-data-perms! {(mt/id) {:data-model {:schemas {"PUBLIC" {table-id       :none
-                                                                                 (inc table-id) :all}}}}}
+                                                                                 other-table-id :all}}}}}
             (mt/user-http-request :rasta :put 403 endpoint {:name "Table Test 2"})))
 
         (testing "a non-admin can update table metadata if they have data model perms for the DB"
@@ -722,7 +726,7 @@
                      clojure.lang.ExceptionInfo
                      #"You don't have permissions to do that\."
                      (upload-csv!)))))
-            (with-all-users-data-perms! {db-id {:data {:native :write, :schemas ["not_public"]}}}
+            (with-all-users-data-perms! {db-id {:data {:native :write, :schemas {"not_public" :all}}}}
               (is (some? (upload-csv!))))))))))
 
 (deftest append-csv-data-perms-test
