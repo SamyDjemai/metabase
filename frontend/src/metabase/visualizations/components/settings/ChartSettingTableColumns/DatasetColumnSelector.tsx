@@ -3,6 +3,7 @@ import type {
   DatasetColumn,
   TableColumnOrderSetting,
 } from "metabase-types/api";
+import type Question from "metabase-lib/Question";
 import { TableColumnSelector } from "./TableColumnSelector";
 import {
   disableColumnInSettings,
@@ -19,6 +20,7 @@ import type {
 
 export interface DatasetColumnSelectorProps {
   value: TableColumnOrderSetting[];
+  question?: Question;
   columns: DatasetColumn[];
   getColumnName: (column: DatasetColumn) => string;
   onChange: (value: TableColumnOrderSetting[]) => void;
@@ -27,6 +29,7 @@ export interface DatasetColumnSelectorProps {
 
 export const DatasetColumnSelector = ({
   value,
+  question,
   columns: datasetColumns,
   getColumnName,
   onChange,
@@ -37,8 +40,12 @@ export const DatasetColumnSelector = ({
   }, [value]);
 
   const columnItems = useMemo(() => {
-    return getDatasetColumnSettingItems(datasetColumns, columnSettings);
-  }, [datasetColumns, columnSettings]);
+    return getDatasetColumnSettingItems(
+      datasetColumns,
+      columnSettings,
+      question?.query(),
+    );
+  }, [datasetColumns, columnSettings, question]);
 
   const handleEnableColumn = useCallback(
     (columnItem: ColumnSettingItem) => {

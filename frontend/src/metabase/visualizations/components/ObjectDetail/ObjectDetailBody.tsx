@@ -1,12 +1,14 @@
 import type { DatasetData, VisualizationSettings } from "metabase-types/api";
 import type ForeignKey from "metabase-lib/metadata/ForeignKey";
 
+import type Question from "metabase-lib/Question";
 import { ObjectDetailBodyWrapper } from "./ObjectDetailBody.styled";
 import { DetailsTable } from "./ObjectDetailsTable";
 import { Relationships } from "./ObjectRelationships";
 import type { OnVisualizationClickType } from "./types";
 
 export interface ObjectDetailBodyProps {
+  question?: Question;
   data: DatasetData;
   objectName: string;
   zoomedRow: unknown[];
@@ -23,6 +25,7 @@ export interface ObjectDetailBodyProps {
 
 export function ObjectDetailBody({
   data,
+  question,
   objectName,
   zoomedRow,
   settings,
@@ -43,6 +46,7 @@ export function ObjectDetailBody({
     <ObjectDetailBodyWrapper>
       <DetailsTable
         data={data}
+        question={question}
         zoomedRow={zoomedRow}
         settings={settings}
         onVisualizationClick={onVisualizationClick}

@@ -57,6 +57,7 @@ export const ChartSettingTableColumns = ({
     return (
       <DatasetColumnSelector
         value={value}
+        question={question}
         columns={columns}
         getColumnName={getColumnName}
         onChange={onChange}

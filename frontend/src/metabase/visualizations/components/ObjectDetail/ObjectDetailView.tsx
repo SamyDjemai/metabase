@@ -346,6 +346,7 @@ export function ObjectDetailView({
               />
             )}
             <ObjectDetailBody
+              question={question}
               data={data}
               objectName={objectName}
               zoomedRow={zoomedRow ?? []}

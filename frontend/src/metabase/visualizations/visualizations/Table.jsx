@@ -344,6 +344,8 @@ export default class Table extends Component {
         ),
       });
     } else {
+      // construct a Question that is in-sync with query results
+      const question = new Question(card, metadata);
       const { cols, rows, results_timezone } = data;
       const columnSettings = settings["table.columns"];
       const columnIndexes = columnSettings
@@ -352,7 +354,11 @@ export default class Table extends Component {
             columnSetting.enabled || this.props.isShowingDetailsOnlyColumns,
         )
         .map(columnSetting =>
-          findColumnIndexForColumnSetting(cols, columnSetting),
+          findColumnIndexForColumnSetting(
+            cols,
+            columnSetting,
+            question.query(),
+          ),
         )
         .filter(columnIndex => columnIndex >= 0 && columnIndex < cols.length);
 
@@ -362,9 +368,8 @@ export default class Table extends Component {
           rows: rows.map(row => columnIndexes.map(i => row[i])),
           results_timezone,
         },
-        // construct a Question that is in-sync with query results
-        // cache it here for performance reasons
-        question: new Question(card, metadata),
+        // for performance reasons
+        question,
       });
     }
   }

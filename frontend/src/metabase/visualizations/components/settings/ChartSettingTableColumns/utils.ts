@@ -87,9 +87,10 @@ export const getQueryColumnSettingItems = (
 export const getDatasetColumnSettingItems = (
   datasetColumns: DatasetColumn[],
   columnSettings: ColumnSetting[],
+  query?: Lib.Query,
 ): ColumnSettingItem[] => {
   const datasetIndexes = columnSettings.map(columnSetting =>
-    findColumnIndexForColumnSetting(datasetColumns, columnSetting),
+    findColumnIndexForColumnSetting(datasetColumns, columnSetting, query),
   );
 
   return columnSettings.reduce(

@@ -692,6 +692,7 @@ class Question {
 
   _syncNativeQuerySettings({ data: { cols = [] } = {} }) {
     const vizSettings = this.setting("table.columns") || [];
+    const query = this.query();
     // "table.columns" receive a value only if there are custom settings
     // e.g. some columns are hidden. If it's empty, it means everything is visible
     const isUsingDefaultSettings = vizSettings.length === 0;
@@ -706,9 +707,10 @@ class Question {
       return !hasVizSettings;
     });
     const validVizSettings = vizSettings.filter(colSetting => {
-      const hasColumn = findColumnIndexForColumnSetting(cols, colSetting) >= 0;
+      const hasColumn =
+        findColumnIndexForColumnSetting(cols, colSetting, query) >= 0;
       const isMutatingColumn =
-        findColumnIndexForColumnSetting(addedColumns, colSetting) >= 0;
+        findColumnIndexForColumnSetting(addedColumns, colSetting, query) >= 0;
       return hasColumn && !isMutatingColumn;
     });
     const noColumnsRemoved = validVizSettings.length === vizSettings.length;
