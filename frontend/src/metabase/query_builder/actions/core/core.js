@@ -241,7 +241,9 @@ export const apiUpdateQuestion = (question, { rerunQuery } = {}) => {
       );
     }
 
-    if (question.isStructured()) {
+    const isStructured = !Lib.queryDisplayInfo(question.query()).isNative;
+
+    if (isStructured) {
       rerunQuery = rerunQuery ?? isResultDirty;
     }
 
