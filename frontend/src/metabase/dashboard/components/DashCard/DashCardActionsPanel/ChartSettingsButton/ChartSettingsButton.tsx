@@ -11,6 +11,9 @@ import type {
   VisualizationSettings,
 } from "metabase-types/api";
 
+import { useSelector } from "metabase/lib/redux";
+import { getMetadata } from "metabase/selectors/metadata";
+import Question from "metabase-lib/Question";
 import { DashCardActionButton } from "../DashCardActionButton/DashCardActionButton";
 
 interface Props {
@@ -26,6 +29,9 @@ export function ChartSettingsButton({
   dashcard,
   onReplaceAllVisualizationSettings,
 }: Props) {
+  const metadata = useSelector(getMetadata);
+  const question = new Question(dashcard?.card, metadata);
+
   return (
     <ModalWithTrigger
       wide
@@ -48,6 +54,7 @@ export function ChartSettingsButton({
         isDashboard
         dashboard={dashboard}
         dashcard={dashcard}
+        question={question}
       />
     </ModalWithTrigger>
   );

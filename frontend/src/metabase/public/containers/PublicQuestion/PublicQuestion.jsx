@@ -224,6 +224,7 @@ class PublicQuestionInner extends Component {
               mode={PublicMode}
               metadata={this.props.metadata}
               onChangeCardAndRun={() => {}}
+              question={question}
             />
           )}
         </LoadingAndErrorWrapper>

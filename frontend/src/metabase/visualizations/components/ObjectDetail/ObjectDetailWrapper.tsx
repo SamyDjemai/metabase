@@ -12,7 +12,7 @@ export function ObjectDetailWrapper({
   card,
   dashcard,
   isObjectDetail,
-  ...props
+  ...rest
 }: ObjectDetailProps) {
   const [currentObjectIndex, setCurrentObjectIndex] = useState(0);
 
@@ -28,7 +28,7 @@ export function ObjectDetailWrapper({
         className={""} // need an empty className to override the Modal default width
       >
         <ObjectDetailView
-          {...props}
+          {...rest}
           showHeader
           data={data}
           question={question}
@@ -43,11 +43,11 @@ export function ObjectDetailWrapper({
   return (
     <>
       <ObjectDetailView
-        {...props}
+        {...rest}
         zoomedRow={data.rows[currentObjectIndex]}
         data={data}
         question={question}
-        showHeader={props.settings["detail.showHeader"]}
+        showHeader={rest.settings["detail.showHeader"]}
         showControls={false}
         showRelations={false}
         closeObjectDetail={closeObjectDetail}
