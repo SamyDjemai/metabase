@@ -1088,13 +1088,11 @@
     :else          (throw (ex-info "Unexpected :base in setting configuration. Expected a literal map, or var one."
                                    {:form form}))))
 
-(defn- inject-base
-  "Recursively uses the values in `:base` as default values for `setting-options`"
-  [{:keys [base] :as setting-options}]
-  (let [without-base (dissoc setting-options :base)]
-    (if-not base
-      without-base
-      (merge (inject-base (deref-map base)) without-base))))
+(defn- expand-kwargs [kwargs]
+  (if (even? (count kwargs))
+    (apply hash-map kwargs)
+    (merge (deref-map (last kwargs))
+           (apply hash-map (butlast kwargs)))))
 
 (defmacro defsetting
   "Defines a new Setting that will be added to the DB at some point in the future.
@@ -1206,13 +1204,13 @@
   (default: `:no-value` for most settings; `:never` for user- and database-local settings, settings with no setter,
   and `:sensitive` settings.)"
   {:style/indent 1}
-  [setting-symbol description & {:as options}]
+  [setting-symbol description & kwargs]
   {:pre [(symbol? setting-symbol)
          (not (namespace setting-symbol))
          ;; don't put exclamation points in your Setting names. We don't want functions like `exciting!` for the getter
          ;; and `exciting!!` for the setter.
          (not (str/includes? (name setting-symbol) "!"))]}
-  (let [options                   (inject-base options)
+  (let [options                   (expand-kwargs kwargs)
         description               (if (or (= (:visibility options) :internal)
                                           (= (:setter options) :none)
                                           (in-test?))

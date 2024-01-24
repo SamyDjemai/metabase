@@ -199,30 +199,27 @@
               #"Cannot initialize setting before the db is set up"
               (setting/get :test-setting-custom-init)))))))
 
-(def ^:private fancy-type
-  {:type :json
-   :setter :none
-   :init str
-   :bloop? true})
+(def base-options
+  {:setter   :none
+   :type     :csv
+   :default "base-default"})
 
-(deftest inject-base-test
-  (testing "The interaction between different :type values and the remaining options"
-    (let [expand            #'setting/inject-base
-          explicit-settings {:bloop? false :blep? 'obviously}
-          with-basic-type   (assoc explicit-settings :type :json)
-          with-map          (assoc explicit-settings :base fancy-type)
-          with-var          (assoc explicit-settings :base (symbol ::fancy-type))]
-      (testing "There's no magic when using regular keyword types"
-        (is (= with-basic-type (expand with-basic-type))))
-      (let [expected {:type   :json
-                      :setter :none
-                      :init   str
-                      :bloop? false
-                      :blep?  'obviously}]
-        (testing "You can use explicit maps for the mixin behaviour"
-          (is (= expected (expand with-map))))
-        (testing "You can use var references for the mixing behaviour"
-          (is (= expected (expand with-var))))))))
+(defsetting test-base-setting
+  "Setting to test the `:feature` property of settings. This only shows up in dev."
+  :visibility :internal
+  :default    "my,default"
+  base-options)
+
+(deftest defsetting-with-base-test
+  (testing "A setting which specifies some base options"
+    (let [setting (setting/resolve-setting :test-base-setting)]
+      (testing "Uses non-overridden base options"
+        (is (= :csv (:type setting)))
+        (is (= :none (:setter setting)))
+        (is (nil? (resolve 'test-base-setting!)))
+      (testing "Can override base options"
+        (is (= "my,default" (:default setting)))
+        (is (= ["my" "default"] (test-base-setting))))))))
 
 (deftest defsetting-setter-fn-test
   (test-setting-2! "FANCY NEW VALUE <3")
