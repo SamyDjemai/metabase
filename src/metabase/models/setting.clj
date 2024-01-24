@@ -1089,17 +1089,21 @@
          ;; if :type isn't defined here we'll get a (somewhat confusing) schema error
          {:type (:type type-options)}))
 
-(defn- expand-setting-type
-  "If the :type of a setting corresponds to a map, use it like a mix-in"
-  [setting-options]
-  (let [setting-type (:type setting-options)]
-    (cond
-      (keyword? setting-type) setting-options
-      (map? setting-type) (merge-type-map setting-options setting-type)
-      (symbol? setting-type) (merge-type-map setting-options @(resolve setting-type))
 
-      ;; we don't expect other types, but leave it alone and let the schema complain about it
-      :else setting-options)))
+(defn- deref-map [form]
+  (cond
+    (map? form)    form
+    (symbol? form) (u/prog1 @(resolve form) (assert (map? <>)))
+    :else          (throw (ex-info "Unexpected :base in setting configuration. Expected a literal map, or var one."
+                                   {:form form}))))
+
+(defn- inject-base
+  "Recursively uses the values in `:base` as default values for `setting-options`"
+  [{:keys [base] :as setting-options}]
+  (let [without-base (dissoc setting-options :base)]
+    (if-not base
+      without-base
+      (merge (inject-base (deref-map base)) without-base))))
 
 (defmacro defsetting
   "Defines a new Setting that will be added to the DB at some point in the future.
@@ -1217,7 +1221,7 @@
          ;; don't put exclamation points in your Setting names. We don't want functions like `exciting!` for the getter
          ;; and `exciting!!` for the setter.
          (not (str/includes? (name setting-symbol) "!"))]}
-  (let [options                   (expand-setting-type options)
+  (let [options                   (inject-base options)
         description               (if (or (= (:visibility options) :internal)
                                           (= (:setter options) :none)
                                           (in-test?))

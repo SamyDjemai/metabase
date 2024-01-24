@@ -42,7 +42,7 @@
                  :user-local :never,
                  :default nil,
                  :name :analytics-uuid,
-                 :type metabase.models.setting/uuid-nonce-type,
+                 :base metabase.models.setting/uuid-nonce-type,
                  :enabled? nil,
                  :deprecated nil,
                  :sensitive? false,

@@ -205,13 +205,13 @@
    :init str
    :bloop? true})
 
-(deftest type-mixin-test
+(deftest inject-base-test
   (testing "The interaction between different :type values and the remaining options"
-    (let [expand            #'setting/expand-setting-type
+    (let [expand            #'setting/inject-base
           explicit-settings {:bloop? false :blep? 'obviously}
           with-basic-type   (assoc explicit-settings :type :json)
-          with-map          (assoc explicit-settings :type fancy-type)
-          with-var          (assoc explicit-settings :type (symbol ::fancy-type))]
+          with-map          (assoc explicit-settings :base fancy-type)
+          with-var          (assoc explicit-settings :base (symbol ::fancy-type))]
       (testing "There's no magic when using regular keyword types"
         (is (= with-basic-type (expand with-basic-type))))
       (let [expected {:type   :json
