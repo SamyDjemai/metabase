@@ -459,7 +459,7 @@ describe("QueryBuilder", () => {
 
         userEvent.click(screen.getByText("New"));
         userEvent.click(
-          within(screen.getByTestId("popover")).getByText("SQL query"),
+          within(await screen.findByRole("dialog")).getByText("SQL query"),
         );
         await waitForLoaderToBeRemoved();
 
@@ -479,7 +479,7 @@ describe("QueryBuilder", () => {
 
         userEvent.click(screen.getByText("New"));
         userEvent.click(
-          within(screen.getByTestId("popover")).getByText("SQL query"),
+          within(await screen.findByRole("dialog")).getByText("SQL query"),
         );
 
         await waitForLoaderToBeRemoved();
@@ -936,7 +936,7 @@ describe("QueryBuilder", () => {
 
         userEvent.click(screen.getByText("New"));
         userEvent.click(
-          within(screen.getByTestId("popover")).getByText("SQL query"),
+          within(await screen.findByRole("dialog")).getByText("SQL query"),
         );
         await waitForLoaderToBeRemoved();
 
@@ -956,7 +956,7 @@ describe("QueryBuilder", () => {
 
         userEvent.click(screen.getByText("New"));
         userEvent.click(
-          within(screen.getByTestId("popover")).getByText("SQL query"),
+          within(await screen.findByRole("dialog")).getByText("SQL query"),
         );
         await waitForLoaderToBeRemoved();
 
@@ -975,7 +975,7 @@ describe("QueryBuilder", () => {
 
         userEvent.click(screen.getByText("New"));
         userEvent.click(
-          within(screen.getByTestId("popover")).getByText("SQL query"),
+          within(await screen.findByRole("dialog")).getByText("SQL query"),
         );
         await waitForLoaderToBeRemoved();
 
@@ -1000,7 +1000,7 @@ describe("QueryBuilder", () => {
 
         userEvent.click(screen.getByText("New"));
         userEvent.click(
-          within(screen.getByTestId("popover")).getByText("SQL query"),
+          within(await screen.findByRole("dialog")).getByText("SQL query"),
         );
         await waitForLoaderToBeRemoved();
 
