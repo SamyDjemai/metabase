@@ -1081,12 +1081,16 @@
   []
   (str/ends-with? (ns-name *ns*) "-test"))
 
-(defn- deref-map [form]
+(defn- deref-map [expr]
   (cond
-    (map? form)    form
-    (symbol? form) (u/prog1 @(resolve form) (assert (map? <>)))
-    :else          (throw (ex-info "Unexpected :base in setting configuration. Expected a literal map, or var one."
-                                   {:form form}))))
+    (map? expr)    expr
+    (symbol? expr) (u/prog1 @(resolve expr)
+                     (when-not (map? <>)
+                       (throw (ex-info "Invalid :base in setting configuration. Must reference a map."
+                                       {:symbol expr :value <>})))
+                     (assert (map? <>)))
+    :else          (throw (ex-info "Invalid :base in setting configuration. Must be a literal map or a reference."
+                                   {:expression expr}))))
 
 (defn- expand-kwargs [kwargs]
   (if (even? (count kwargs))
