@@ -48,6 +48,7 @@ relativeTimeConfig = {
   dd: relativeTimeConfig.d,
   MM: relativeTimeConfig.M,
   yy: relativeTimeConfig.y,
+  ss: relativeTimeConfig.s,
 };
 
 dayjs.updateLocale(dayjs.locale(), { relativeTime: relativeTimeConfig });
