@@ -1081,15 +1081,6 @@
   []
   (str/ends-with? (ns-name *ns*) "-test"))
 
-(defn- merge-type-map [setting-options type-options]
-  ;; we currently allow the type-map to define any of the setting parameters, we may want to restrict this.
-  (merge type-options
-         ;; we currently allow explicit keys to override anything in the type-map, we may want to disallow some.
-         setting-options
-         ;; if :type isn't defined here we'll get a (somewhat confusing) schema error
-         {:type (:type type-options)}))
-
-
 (defn- deref-map [form]
   (cond
     (map? form)    form
